@@ -46,15 +46,16 @@ $(function(){
   $('#query_form').after($input).after('grep:');
   $input.on('input',function(){
     let text = $(this).val();
+    let tlist = text.split(' ').filter(x=>x);
     let $view = $subject.filter(function(){
-      return text === '' ? true : text.split(' ').filter(x=>x).some(x=>$(this).data('text').match(x));
+      return text === '' ? true : tlist.some(x=>!!~$(this).data('text').indexOf(x));
     });
 
     $tasks.attr('data-view-text','');
     let $tools = $view.map((i,x)=>$(x).data('tooltip').get())
-      .filter((i,x)=>text === '' ? false : $(x).text().match(text))
+      .filter((i,x)=> text === '' ? false : tlist.some(t=>!!~$(x).text().indexOf(t)))
       .each((i,x)=>{
-        $(x).attr('data-view-text',($(x).data('text')||'').split('\n').filter(x=>x.match(text))[0]);
+        $(x).attr('data-view-text',($(x).data('text')||'').split('\n').filter(x=>tlist.some(s=>!!~x.indexOf(s)))[0]);
       });
 
     $subject.hide();
